@@ -70,38 +70,25 @@ end
 -------------------
 ----- THREADS -----
 -------------------
+local collectblip = {}
+local processblip = {}
+
 for k, v in pairs(Config.Collecting) do
     if v.showBlip then
         CreateThread(function()
-            while true do
-                Wait(1000)
-                if not CollectBlip and not ProcessBlip then
-                --     local CollectBlip = N_0x554d9d53f696d002(1664425300, v.Collect)
-                --     SetBlipSprite(CollectBlip, v.Csprite)
-                --     SetBlipScale(CollectBlip, 0.2)
-                --     Citizen.InvokeNative(0x9CB1A1623062F402, tonumber(CollectBlip), "Gather Weed")
-                --     table.insert(blipstable, CollectBlip)
+            local number = #collectblip + 1
+            collectblip[number] = N_0x554d9d53f696d002(1664425300, v.Collect)
+            SetBlipSprite(collectblip[number], v.Csprite)
+            SetBlipScale(collectblip[number], 0.2)
+            Citizen.InvokeNative(0x9CB1A1623062F402, tonumber(collectblip[number]), "Gather "..sharedItems[v.ItemIn].label)
+            table.insert(blipstable, collectblip[number])
 
-                --     local ProcessBlip = N_0x554d9d53f696d002(1664425300, v.Process)
-                --     SetBlipSprite(ProcessBlip, v.Psprite)
-                --     SetBlipScale(ProcessBlip, 0.2)
-                --     Citizen.InvokeNative(0x9CB1A1623062F402, tonumber(ProcessBlip), "Process "..sharedItems[v.ItemIn].label)
-                --     table.insert(blipstable, ProcessBlip)
-                -- else
-                    local CollectBlip = N_0x554d9d53f696d002(1664425300, v.Collect)
-                    SetBlipSprite(CollectBlip, v.Csprite)
-                    SetBlipScale(CollectBlip, 0.2)
-                    Citizen.InvokeNative(0x9CB1A1623062F402, tonumber(CollectBlip), "Gather "..sharedItems[v.ItemIn].label)
-                    table.insert(blipstable, CollectBlip)
-
-                    local ProcessBlip = N_0x554d9d53f696d002(1664425300, v.Process)
-                    SetBlipSprite(ProcessBlip, v.Psprite)
-                    SetBlipScale(ProcessBlip, 0.2)
-                    Citizen.InvokeNative(0x9CB1A1623062F402, tonumber(ProcessBlip), "Process "..sharedItems[v.ItemIn].label)
-                    table.insert(blipstable, ProcessBlip)
-                end
-                break
-            end
+            local number2 = #processblip + 1
+            processblip[number2] = N_0x554d9d53f696d002(1664425300, v.Process)
+            SetBlipSprite(processblip[number2], v.Psprite)
+            SetBlipScale(processblip[number2], 0.2)
+            Citizen.InvokeNative(0x9CB1A1623062F402, tonumber(processblip[number2]), "Process "..sharedItems[v.ItemIn].label)
+            table.insert(blipstable, processblip[number2])
         end)
     end
 end
@@ -132,7 +119,7 @@ for k, v in pairs (Config.Collecting) do
                         else
                             exports['qbr-core']:Notify(9, 'You don\'t have '..sharedItems[v.ItemIn].label..'!', 5000, 0, 'mp_lobby_textures', 'cross', 'COLOR_RED')
                         end
-                    end, { [v.ItemIn] = v.Input })
+                    end, { [v.ItemIn] = v.Input } )
                 end
             end
         end
@@ -208,7 +195,7 @@ end
 AddEventHandler('onResourceStop', function(resource)
     if resource == GetCurrentResourceName() then
 		for _,v in pairs(blipstable) do
-            DeleteBlip(v)
+            RemoveBlip(v)
         end
     end
 end)
